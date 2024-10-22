@@ -1,0 +1,19 @@
+<h2>Saved Weather Data</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>City</th>
+            <th>Temperature (°C)</th>
+            <th>Searched At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for weather in saved_weather %}
+        <tr>
+            <td>{{ weather.city_name }}</td>
+            <td>{{ weather.temperature }}</td>
+            <td>{{ weather.searched_at }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

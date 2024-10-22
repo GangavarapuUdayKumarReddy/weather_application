@@ -1,0 +1,192 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url("{% static 'weather_app/images/weather_background.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; 
+            padding: 20px;
+        }
+
+        .weather-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .weather-card, .forecast-card, .daily-forecast-card {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .weather-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 24px;
+        }
+
+        .weather-header img {
+            width: 60px;
+        }
+
+        .city-name {
+            font-size: 18px;
+            color: #6c757d;
+            text-align: center;
+        }
+
+        .hourly-forecast {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .forecast-box {
+            flex: 1;
+            text-align: center;
+        }
+
+        .forecast-box img {
+            width: 40px;
+        }
+
+        .forecast-temp {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+        .forecast-time, .forecast-day {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .daily-forecast-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .daily-forecast-box {
+            flex: 1;
+            text-align: center;
+            background-color: #f9fbfd;
+            border-radius: 10px;
+            padding: 10px;
+            width: 90px; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .daily-forecast-box img {
+            width: 40px; 
+            margin-bottom: 5px;
+        }
+
+        .daily-forecast-box .day {
+            font-size: 14px; 
+            font-weight: 600;
+        }
+
+        .daily-forecast-box .temp {
+            font-size: 16px; 
+            color: #007bff;
+        }
+
+        .daily-forecast-box .condition {
+            font-size: 12px; 
+            color: #6c757d;
+        }
+
+        .daily-forecast-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .daily-forecast-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .daily-forecast-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .daily-forecast-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container weather-container">
+        <h1 class="text-center mb-4">Weather Forecast</h1>
+
+        <form method="GET" action="{% url 'weather_view' %}" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="city" class="form-control" placeholder="Enter city name" required>
+                <button class="btn btn-primary" type="submit">Get Weather</button>
+            </div>
+        </form>
+
+        <a href="{% url 'saved_weather' %}" class="btn btn-secondary mb-4">View Saved Weather Data</a>
+
+        {% if city %}
+        <div class="weather-card">
+            <div class="weather-header">
+                <div>
+                    <strong>{{ today_weather.temp_c }}°C</strong><br>
+                    <small>{{ today_weather.condition.text }}</small>
+                </div>
+                <img src="https:{{ today_weather.condition.icon }}" alt="{{ today_weather.condition.text }}">
+            </div>
+            <p class="city-name">{{ city }}</p>
+        </div>
+
+        <div class="forecast-card">
+            <h4>Next 6 Hours Forecast</h4>
+            <div class="row hourly-forecast">
+                {% for hour in hourly_forecast %}
+                <div class="col-6 col-md-4 col-lg-2 forecast-box">
+                    <p class="forecast-temp">{{ hour.temp_c }}°C</p>
+                    <img src="https:{{ hour.condition.icon }}" alt="{{ hour.condition.text }}">
+                    <p class="forecast-time">{{ hour.time|slice:"11:16" }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="daily-forecast-card">
+            <h4>7-Day Forecast</h4>
+            <div class="daily-forecast-container">
+                {% for day in forecast %}
+                <div class="daily-forecast-box">
+                    <img src="https:{{ day.icon }}" alt="{{ day.condition }}">
+                    <p class="day">{{ day.date|date:"D" }}</p>
+                    <p class="temp">{{ day.avgtemp_c }}°C</p> 
+                    <p class="condition">{{ day.condition }}</p> 
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% else %}
+            <p class="text-danger">Please enter a city name to get the weather information.</p>
+        {% endif %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
